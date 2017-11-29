@@ -115,6 +115,29 @@ bool TestCalculatorExample4() {
   return is_ok;
 }
 
+bool TestRoundLonger() {
+  std::istream* istream =
+      new std::istringstream("123.123456");
+  std::ostream* ostream = new std::ostringstream(std::string());
+  calculator::Calculator(istream, ostream);
+  bool is_equal = dynamic_cast<std::ostringstream*>(ostream)->str() == "123.12";
+  delete istream;
+  delete ostream;
+  return is_equal;
+}
+
+bool TestRoundShorter() {
+  std::istream* istream =
+      new std::istringstream("123.1");
+  std::ostream* ostream = new std::ostringstream(std::string());
+  calculator::Calculator(istream, ostream);
+  bool is_equal = dynamic_cast<std::ostringstream*>(ostream)->str() == "123.1";
+  delete istream;
+  delete ostream;
+  return is_equal;
+}
+
+
 bool TestCustomFractionToFloat() {
   TEST_INIT;
   TEST_FUNCTION(TestCustomFractionToFloatZeroFraction);
@@ -142,12 +165,20 @@ bool TestCalculator() {
   TEST_RETURN;
 }
 
+bool TestRound() {
+  TEST_INIT;
+  TEST_FUNCTION(TestRoundLonger);
+  TEST_FUNCTION(TestRoundShorter);
+  TEST_RETURN;
+}
+
 bool TestAll() {
   TEST_INIT;
   std::cout << "Testing started:" << std::endl;
   TEST_FUNCTION(TestCustomFractionToFloat);
   TEST_FUNCTION(TestCustomFractionInputOperator);
   TEST_FUNCTION(TestCalculator);
+  TEST_FUNCTION(TestRound);
   std::cout << "All tests: " << (result ? "Ok" : "FAILED") << std::endl;
   TEST_RETURN;
 }

@@ -33,6 +33,7 @@
 #include <map>
 #include <sstream>
 #include <string>
+#include <cmath>
 
 using namespace calculator;
 
@@ -213,6 +214,13 @@ float expr(ParsingContext& context, bool get) {
     }
 }
 
+float pround(float v, int p) {
+  v *= pow(10, p);
+  v = round(v);
+  v /= pow(10, p);
+  return v;
+}
+
 void calculator::Calculator(std::istream* istream, std::ostream* ostream) {
   ParsingContext context;
   context.istream = istream;
@@ -227,6 +235,6 @@ void calculator::Calculator(std::istream* istream, std::ostream* ostream) {
     if (context.current_token == kPrintToken) {
       continue;
     }
-    *context.ostream << expr(context, false);
+    *context.ostream << pround(expr(context, false), 2);
   }
 }
