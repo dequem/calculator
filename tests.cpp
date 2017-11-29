@@ -70,35 +70,28 @@ bool TestCustomFractionInputOperatorSpaces() {
   return (f.integer == 12) && (f.fraction == 34);
 }
 
-bool TestCalculatorExample1() {
-  std::istream* istream = new std::istringstream("-1 + 5 - 3");
+bool CalculatorResultIsAsExpected(const std::string& input_string,
+                                  const std::string& wanted_result) {
+  std::istream* istream = new std::istringstream(input_string);
   std::ostream* ostream = new std::ostringstream(std::string());
   calculator::Calculator(istream, ostream);
-  bool is_equal = dynamic_cast<std::ostringstream*>(ostream)->str() == "1";
+  bool is_equal = dynamic_cast<std::ostringstream*>(ostream)->str() == wanted_result;
   delete istream;
   delete ostream;
   return is_equal;
+}
+
+
+bool TestCalculatorExample1() {
+  return CalculatorResultIsAsExpected("-1 + 5 - 3", "1");
 }
 
 bool TestCalculatorExample2() {
-  std::istream* istream = new std::istringstream("-10 + (8 * 2.5) - (3 / 1,5)");
-  std::ostream* ostream = new std::ostringstream(std::string());
-  calculator::Calculator(istream, ostream);
-  bool is_equal = dynamic_cast<std::ostringstream*>(ostream)->str() == "8";
-  delete istream;
-  delete ostream;
-  return is_equal;
+  return CalculatorResultIsAsExpected("-10 + (8 * 2.5) - (3 / 1,5)", "8");
 }
 
 bool TestCalculatorExample3() {
-  std::istream* istream =
-      new std::istringstream("1 + (2 * (2.5 + 2.5 + (3 - 2))) - (3 / 1.5)");
-  std::ostream* ostream = new std::ostringstream(std::string());
-  calculator::Calculator(istream, ostream);
-  bool is_equal = dynamic_cast<std::ostringstream*>(ostream)->str() == "11";
-  delete istream;
-  delete ostream;
-  return is_equal;
+  return CalculatorResultIsAsExpected("1 + (2 * (2.5 + 2.5 + (3 - 2))) - (3 / 1.5)", "11");
 }
 
 bool TestCalculatorExample4() {
@@ -116,27 +109,20 @@ bool TestCalculatorExample4() {
 }
 
 bool TestRoundLonger() {
-  std::istream* istream =
-      new std::istringstream("123.123456");
-  std::ostream* ostream = new std::ostringstream(std::string());
-  calculator::Calculator(istream, ostream);
-  bool is_equal = dynamic_cast<std::ostringstream*>(ostream)->str() == "123.12";
-  delete istream;
-  delete ostream;
-  return is_equal;
+  return CalculatorResultIsAsExpected("123.123456", "123.12");
+}
+
+bool TestRoundLongerAboveMiddle() {
+  return CalculatorResultIsAsExpected("123.1250001", "123.13");
 }
 
 bool TestRoundShorter() {
-  std::istream* istream =
-      new std::istringstream("123.1");
-  std::ostream* ostream = new std::ostringstream(std::string());
-  calculator::Calculator(istream, ostream);
-  bool is_equal = dynamic_cast<std::ostringstream*>(ostream)->str() == "123.1";
-  delete istream;
-  delete ostream;
-  return is_equal;
+  return CalculatorResultIsAsExpected("123.1", "123.1");
 }
 
+bool TestFail() {
+  return !CalculatorResultIsAsExpected("123.123456", "123456");
+}
 
 bool TestCustomFractionToFloat() {
   TEST_INIT;
@@ -168,6 +154,7 @@ bool TestCalculator() {
 bool TestRound() {
   TEST_INIT;
   TEST_FUNCTION(TestRoundLonger);
+  TEST_FUNCTION(TestRoundLongerAboveMiddle);
   TEST_FUNCTION(TestRoundShorter);
   TEST_RETURN;
 }
@@ -179,6 +166,7 @@ bool TestAll() {
   TEST_FUNCTION(TestCustomFractionInputOperator);
   TEST_FUNCTION(TestCalculator);
   TEST_FUNCTION(TestRound);
+  TEST_FUNCTION(TestFail);
   std::cout << "All tests: " << (result ? "Ok" : "FAILED") << std::endl;
   TEST_RETURN;
 }
